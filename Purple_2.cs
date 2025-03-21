@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lab_6
+namespace Lab_7
 {
     public class Purple_2
     {
@@ -60,11 +59,11 @@ namespace Lab_6
             }
             public static void Sort(Participant[] array)
             {
-                if(array == null) return;
+                if (array == null) return;
 
-                for(int i = 1, j = 2; i < array.Length; )
+                for (int i = 1, j = 2; i < array.Length;)
                 {
-                    if(i == 0 || array[i - 1].Result >= array[i].Result)
+                    if (i == 0 || array[i - 1].Result >= array[i].Result)
                     {
                         i = j;
                         j++;
@@ -114,14 +113,14 @@ namespace Lab_6
             //методы
             public void Add(Participant participant)
             {
-                if(_participants == null) return;
+                if (_participants == null) return;
 
                 Array.Resize(ref _participants, _participants.Length + 1);
                 _participants[_participants.Length - 1] = participant;
             }
             public void Add(Participant[] participants)
             {
-                if(participants == null) return;
+                if (participants == null) return;
                 foreach (var participant in participants)
                 {
                     Add(participant);
@@ -131,19 +130,15 @@ namespace Lab_6
             {
                 if (_participants == null) return;
 
-                int notJump = -1;
-                for(int i = 0; i < _participants.Length; i++)
+                for (int i = 0; i < _participants.Length; i++)
                 {
-                    if (_participants[i].Marks.All(mark => mark == 0) && _participants[i].Marks != null)
+                    if (_participants[i].Distance == 0)
                     {
-                        notJump = i;
+                        _participants[i].Jump(distance, marks, _standard);
                         break;
                     }
                 }
                 
-                if (notJump == -1) return;
-
-                _participants[notJump].Jump(distance, marks, _standard);
             }
             public void Print()
             {
@@ -167,3 +162,4 @@ namespace Lab_6
         }
     }
 }
+

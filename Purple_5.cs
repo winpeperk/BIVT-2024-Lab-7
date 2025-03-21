@@ -1,12 +1,11 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using static Lab_6.Purple_5;
 
-namespace Lab_6
+namespace Lab_7
 {
     public class Purple_5
     {
@@ -35,25 +34,29 @@ namespace Lab_6
             {
                 int counter = 0;
 
-                foreach(var response in responses)
+                foreach (var response in responses)
                 {
-                    switch(questionNumber)
+                    switch (questionNumber)
                     {
                         case 1:
                             {
-                                if (response.Animal != null) counter++;
+                                if (response.Animal != null && _animal != null && response.Animal == _animal)
+                                    counter++;
                                 break;
                             }
                         case 2:
                             {
-                                if (response.CharacterTrait != null) counter++;
+                                if (response.CharacterTrait != null && _characterTrait != null && response.CharacterTrait == _characterTrait)
+                                    counter++;
                                 break;
                             }
                         case 3:
                             {
-                                if (response.Concept != null) counter++;
+                                if (response.Concept != null && _concept != null && response.Concept == _concept)
+                                    counter++;
                                 break;
                             }
+                        default: return counter;
                     }
                 }
 
@@ -72,7 +75,7 @@ namespace Lab_6
                 _name = name;
                 _responses = new Response[0];
             }
-
+            
             //поля
             private string _name;
             private Response[] _responses;
@@ -179,9 +182,9 @@ namespace Lab_6
                 }
 
                 //сортируем
-                for (int i = 1, j = 2; i < answers.Length; )
+                for (int i = 1, j = 2; i < answers.Length;)
                 {
-                    if(i == 0 || counterAnswers[i - 1] >= counterAnswers[i])
+                    if (i == 0 || counterAnswers[i - 1] >= counterAnswers[i])
                     {
                         i = j;
                         j++;
@@ -242,10 +245,10 @@ namespace Lab_6
                     _researches = new Research[0];
 
                 int count = _counterResearches++;
-                int month = DateTime.Now.Month;
-                int year = DateTime.Now.Year;
+                string month = DateTime.Now.ToString("MM");
+                string year = DateTime.Now.ToString("yy");
 
-                Research newResearch = new Research($"No_{count}_{month}/{year % 100}");
+                Research newResearch = new Research($"No_{count}_{month}/{year}");
 
                 Array.Resize(ref _researches, _researches.Length + 1);
                 _researches[_researches.Length - 1] = newResearch;
@@ -254,12 +257,14 @@ namespace Lab_6
             }
             public (string, double)[] GetGeneralReport(int question)
             {
-                if(_researches == null) return null;
+                if (_researches == null) return null;
 
                 string[] answers = new string[0];
 
                 foreach (var research in _researches)
                 {
+                    if (research.Responses == null) return null;
+
                     foreach (var response in research.Responses)
                     {
                         switch (question)
@@ -300,6 +305,7 @@ namespace Lab_6
 
                 return result;
             }
-        } 
+        }
     }
+
 }

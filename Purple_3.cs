@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using static Lab_6.Purple_1;
 
-namespace Lab_6
+namespace Lab_7
 {
     public class Purple_3
     {
@@ -34,8 +32,28 @@ namespace Lab_6
             //свойства
             public string Name => _name;
             public string Surname => _surname;
-            public double[] Marks => _marks;
-            public int[] Places => _places;
+            public double[] Marks
+            {
+                get
+                {
+                    if (_marks == null) return null;
+
+                    double[] copyMarks = new double[7];
+                    Array.Copy(_marks, copyMarks, 7);
+                    return copyMarks;
+                }
+            }
+            public int[] Places
+            {
+                get
+                {
+                    if (_places == null) return null;
+
+                    int[] copyPlaces = new int[7];
+                    Array.Copy(_places, copyPlaces, 7);
+                    return copyPlaces;
+                }
+            }
             public int Score
             {
                 get
@@ -53,116 +71,82 @@ namespace Lab_6
             }
             public static void SetPlaces(Participant[] participants)
             {
-                if(participants == null || participants.Length == 0) return;
+                if(participants == null) return;
 
-                foreach (var participant in participants)
+                for(int judge = 0; judge < 7; judge++) //проходимся по оценкам у каждого судьи
                 {
-                    if (participant._marks == null || participant._places == null) return;
-                }
-
-                double[,] matrixMarks = new double[participants.Length, 7];
-
-                for(int i = 0; i < participants.Length; i++)
-                {
-                    for(int j = 0; j < 7; j++)
+                    double[] copyMarks = new double[participants.Length]; //массив оценок всех участников у конкретного судьи
+                    for(int i = 0; i < participants.Length; i++)
                     {
-                        matrixMarks[i, j] = participants[i]._marks[j];
+                        if (participants[i]._marks == null) return;
+                        copyMarks[i] = participants[i]._marks[judge];
                     }
-                }
+                    
+                    Participant[] copyParticipants = new Participant[participants.Length];
+                    Array.Copy(participants, copyParticipants, participants.Length);
 
-                double[,] copyMatrix = new double [matrixMarks.GetLength(0), 7]; //копируем матрицу
-
-                for (int i = 0; i < copyMatrix.GetLength(0); i++)
-                {
-                    for (int j = 0; j < 7; j++)
+                    for (int i = 1, j = 2; i < participants.Length; )
                     {
-                        copyMatrix[i, j] = matrixMarks[i, j];
-                    }
-                } 
-
-                for (int j = 0; j < 7; j++)  //сортировка по убыванию
-                {
-                    for(int i = 1, k = 2; i < copyMatrix.GetLength(0); )
-                    {
-                        if(i == 0 || copyMatrix[i - 1, j] >= copyMatrix[i, j])
+                        if(i == 0 || copyMarks[i-1] >= copyMarks[i])
                         {
-                            i = k;
-                            k++;
+                            i = j;
+                            j++;
                         }
                         else
                         {
-                            (copyMatrix[i - 1, j], copyMatrix[i, j]) = (copyMatrix[i, j], copyMatrix[i - 1, j]);
+                            (copyMarks[i - 1], copyMarks[i]) = (copyMarks[i], copyMarks[i - 1]);
+                            (copyParticipants[i - 1], copyParticipants[i]) = (copyParticipants[i], copyParticipants[i - 1]);
                             i--;
                         }
-                    }
-                } 
+                    } //параллельно сортируем копию массива оценок у судьи и копию массива участников
 
-                double[,] matrixPlaces = new double[matrixMarks.GetLength(0), 7]; //матрица мест
-                for (int j = 0; j < 7; j++) 
-                {
-                    double lastMark = copyMatrix[0, j];
-                    int place = 1;
-                    matrixPlaces[0, j] = 1;
-                    for (int i = 1; i < copyMatrix.GetLength(0); i++)
+                    int[] places = new int[participants.Length]; //массив мест у конкретного судьи
+                    places[0] = 1;
+                    for(int i = 1; i < places.Length; i++)
                     {
-                        if (copyMatrix[i, j] != lastMark)
+                        if (copyMarks[i] == copyMarks[i - 1])
                         {
-                            lastMark = copyMatrix[i, j];
-                            matrixPlaces[i, j] = place + 1;
-                            place++;
+                            places[i] = places[i - 1];
                         }
                         else
                         {
-                            matrixPlaces[i, j] = matrixPlaces[i - 1, j];
+                            places[i] = places[i - 1] + 1;
                         }
                     }
+
+                    for (int i = 0; i < participants.Length; i++)
+                    {
+                        if (copyParticipants[i]._places == null) return;
+                        copyParticipants[i]._places[judge] = places[i];
+                    }
+                    
                 }
 
-                for(int j = 0; j < 7; j++) //присваиваем места исходной матрице
+                int[] lastPlaces = new int[participants.Length]; //сортируем по возрастанию мест у последнего судьи
+                for(int i = 0; i < lastPlaces.Length; i++)
                 {
-                    for(int i = 0;  i < matrixPlaces.GetLength(0); i++)
-                    {
-
-                        for(int ii = 0; ii < matrixPlaces.GetLength(0); ii++)
-                        {
-                            if (matrixMarks[i, j] == copyMatrix[ii, j])
-                            {
-                                matrixMarks[i, j] = matrixPlaces[ii, j];
-                                break;
-                            }
-                        }
-                    }
-                } 
-
-                for (int i = 0; i < matrixMarks.GetLength(0); i++)
-                {
-                    for(int j = 0; j < 7; j++)
-                    {
-                        participants[i]._places[j] = (int)matrixMarks[i, j];
-                    }
+                    lastPlaces[i] = participants[i]._places[6];
                 }
-
-                for(int j = 1, k = 2; j < participants.Length; )
+                for (int i = 1, j = 2; i < participants.Length;)
                 {
-                    if(j == 0 || matrixMarks[j - 1, 6] <= matrixMarks[j, 6])
+                    if (i == 0 || lastPlaces[i-1] <= lastPlaces[i])
                     {
-                        j = k;
-                        k++;
+                        i = j;
+                        j++;
                     }
                     else
                     {
-                        (matrixMarks[j - 1, 6], matrixMarks[j, 6]) = (matrixMarks[j, 6], matrixMarks[j - 1, 6]);
-                        (participants[j - 1], participants[j]) = (participants[j], participants[j - 1]);
-                        j--;
+                        (lastPlaces[i - 1], lastPlaces[i]) = (lastPlaces[i], lastPlaces[i - 1]);
+                        (participants[i - 1], participants[i]) = (participants[i], participants[i - 1]);
+                        i--;
                     }
-                } 
-
+                }
             }
             public static void Sort(Participant[] array)
             {
                 if (array == null) return;
 
-                foreach(var participant in array)
+                foreach (var participant in array)
                 {
                     if (participant._marks == null || participant._places == null) return;
                 }
@@ -173,11 +157,11 @@ namespace Lab_6
                     if (participant1.Score > participant2.Score)
                         return 1;
                     else if (participant1.Score < participant2.Score) return -1;
-                    
+
                     //минимальное место
                     if (participant1._places.Min() > participant2._places.Min())
                         return 1;
-                    else if(participant1._places.Min() < participant2._places.Min())
+                    else if (participant1._places.Min() < participant2._places.Min())
                         return -1;
 
                     //по сумме очков
@@ -185,10 +169,10 @@ namespace Lab_6
                         return -1;
                     else if (participant1._marks.Sum() < participant2._marks.Sum())
                         return 1;
-                    
+
                     return 0;
                 });
-            } 
+            }
             public void Print()
             {
                 Console.WriteLine($"{_name} {_surname} {Score} {_places.Min()} {_marks.Sum()}");
@@ -199,17 +183,17 @@ namespace Lab_6
             //конструктор
             public Skating(double[] moods)
             {
-                if(moods == null) return;
-
-                _moods = new double[moods.Length];
-                Array.Copy(moods, _moods, _moods.Length);
-                ModificateMood();
-
                 _participants = new Participant[0];
+
+                if (moods == null || moods.Length != 7) return;
+
+                _moods = new double[7];
+                Array.Copy(moods, _moods, 7);
+                ModificateMood();
             }
 
             //поля
-            private Participant[] _participants;
+            protected Participant[] _participants;
             protected double[] _moods;
 
             //свойства
@@ -219,8 +203,8 @@ namespace Lab_6
                 {
                     if (_participants == null) return null;
 
-                    Participant[] copyParticipants = new Participant[ _participants.Length ];
-                    Array.Copy(_participants, copyParticipants, _participants.Length );
+                    Participant[] copyParticipants = new Participant[_participants.Length];
+                    Array.Copy(_participants, copyParticipants, _participants.Length);
 
                     return copyParticipants;
                 }
@@ -231,8 +215,8 @@ namespace Lab_6
                 {
                     if (_moods == null) return null;
 
-                    double[] copyMoods = new double[ _moods.Length ];
-                    Array.Copy(_moods, copyMoods, _moods.Length );
+                    double[] copyMoods = new double[_moods.Length];
+                    Array.Copy(_moods, copyMoods, _moods.Length);
 
                     return copyMoods;
                 }
@@ -242,13 +226,15 @@ namespace Lab_6
             protected abstract void ModificateMood();
             public void Evaluate(double[] marks)
             {
-                if(_participants == null || _moods == null || marks == null || _moods.Length != marks.Length) return;
+                if (_participants == null || _moods == null || marks == null || _moods.Length != marks.Length) return;
 
                 foreach (var participant in _participants)
                 {
-                    if(participant.Marks.All(mark => mark == 0))
+                    if (participant.Marks == null) continue;
+
+                    if (participant.Marks.All(mark => mark == 0))
                     {
-                        for(int i = 0; i < _moods.Length; i++)
+                        for (int i = 0; i < _moods.Length; i++)
                         {
                             participant.Evaluate(marks[i] * _moods[i]);
                         }
@@ -282,7 +268,7 @@ namespace Lab_6
             //метод
             protected override void ModificateMood()
             {
-                if(_moods == null) return;
+                if (_moods == null) return;
 
                 _moods = _moods
                     .Select((mood, judge) => mood + (judge + 1) / 10.0)
@@ -300,10 +286,11 @@ namespace Lab_6
                 if (_moods == null) return;
 
                 _moods = _moods
-                    .Select((mood, judge) => mood * ( 1 + (judge + 1) / 100.0))
+                    .Select((mood, judge) => mood * (1 + (judge + 1) / 100.0))
                     .ToArray();
             }
         }
 
     }
+
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lab_6
+namespace Lab_7
 {
     public class Purple_1
     {
@@ -33,7 +33,7 @@ namespace Lab_6
             //свойства
             public string Name => _name;
             public string Surname => _surname;
-            public double[] Coefs 
+            public double[] Coefs
             {
                 get
                 {
@@ -47,11 +47,11 @@ namespace Lab_6
             {
                 get
                 {
-                    if(_marks == null) return null;
+                    if (_marks == null) return null;
                     int[,] _copyMarks = new int[4, 7];
-                    for(int i = 0; i < 4; i++)
+                    for (int i = 0; i < 4; i++)
                     {
-                        for(int j = 0; j < 7; j++)
+                        for (int j = 0; j < 7; j++)
                         {
                             _copyMarks[i, j] = _marks[i, j];
                         }
@@ -66,18 +66,18 @@ namespace Lab_6
                     if (_marks == null || _coef == null) return 0;
 
                     double result = 0;
-                    for(int jump = 0; jump < 4; jump++)
+                    for (int jump = 0; jump < 4; jump++)
                     {
                         int iMax = 0, iMin = 0;
                         double score = 0;
-                        for(int judge = 1; judge < 7; judge++)
+                        for (int judge = 1; judge < 7; judge++)
                         {
-                            if (_marks[jump, judge] > _marks[jump, iMax]) iMax = judge; 
+                            if (_marks[jump, judge] > _marks[jump, iMax]) iMax = judge;
                             if (_marks[jump, judge] < _marks[jump, iMin]) iMin = judge;
                         }
-                        for(int judge = 0; judge < 7; judge++)
+                        for (int judge = 0; judge < 7; judge++)
                         {
-                            if(judge != iMax && judge != iMin) score += _marks[jump, judge];
+                            if (judge != iMax && judge != iMin) score += _marks[jump, judge];
                         }
                         score *= _coef[jump];
                         result += score;
@@ -95,7 +95,7 @@ namespace Lab_6
             public void Jump(int[] marks)
             {
                 if (marks == null || counterJump >= 4 || _marks == null) return;
-                for(int judge = 0; judge < 7; judge++)
+                for (int judge = 0; judge < 7; judge++)
                 {
                     _marks[counterJump, judge] = marks[judge];
                 }
@@ -105,7 +105,7 @@ namespace Lab_6
             {
                 if (array == null) return;
 
-                for(int i = 1, j = 2; i < array.Length; )
+                for (int i = 1, j = 2; i < array.Length;)
                 {
                     if (i == 0 || array[i - 1].TotalScore >= array[i].TotalScore)
                     {
@@ -121,7 +121,7 @@ namespace Lab_6
             }
             public void Print()
             {
-                Console.WriteLine($"{_name} {_surname} {TotalScore}");                
+                Console.WriteLine($"{_name} {_surname} {TotalScore}");
             }
         }
         public class Judge
@@ -130,7 +130,11 @@ namespace Lab_6
             public Judge(string name, int[] scores)
             {
                 _name = name;
-                _scores = scores; 
+                if(scores != null)
+                {
+                    _scores = new int[scores.Length];
+                    Array.Copy(scores, _scores, scores.Length);
+                }
 
                 _counterMark = 0;
             }
@@ -144,15 +148,15 @@ namespace Lab_6
             //методы
             public int CreateMark()
             {
-                if (_scores == null) return 0;
-                if(_counterMark == _scores.Length) _counterMark = 0;
+                if (_scores == null || _scores.Length == 0) return 0;
+                if (_counterMark == _scores.Length) _counterMark = 0;
                 return _scores[_counterMark++];
             }
             public void Print()
             {
                 Console.WriteLine($"Имя: {_name}");
                 Console.WriteLine("Оценки:");
-                for(int i = 0; i < _scores.Length; i++)
+                for (int i = 0; i < _scores.Length; i++)
                 {
                     Console.Write(_scores[i] + " ");
                 }
@@ -163,10 +167,11 @@ namespace Lab_6
             //конструктор
             public Competition(Judge[] judges)
             {
-                if (_judges.Length != 7) return;
-
-                _judges = judges;
                 _participants = new Participant[0];
+
+                if (_judges == null) return;
+                Judge[] _copyJudge = new Judge[judges.Length];
+                Array.Copy(_judges, _copyJudge, judges.Length);
             }
             //поля
             private Judge[] _judges;
@@ -195,20 +200,19 @@ namespace Lab_6
             //методы
             public void Evaluate(Participant jumper)
             {
-                if(jumper == null || jumper.Marks == null || jumper.Marks.Length != 7) return;
-                if (_judges == null) return;
+                if (jumper == null || _judges == null) return;
 
                 int[] marks = new int[7];
-                for(int i = 0; i < 7; i++)
+                for (int i = 0; i < 7; i++)
                 {
+                    if (_judges[i] == null) return;
                     marks[i] = _judges[i].CreateMark();
-                    if (marks[i] == 0) return;
                 }
                 jumper.Jump(marks);
             }
             public void Add(Participant participant)
             {
-                if(participant == null || _participants == null) return;
+                if (participant == null || _participants == null) return;
 
                 Array.Resize(ref _participants, _participants.Length + 1);
                 _participants[_participants.Length - 1] = participant;
@@ -217,16 +221,16 @@ namespace Lab_6
             }
             public void Add(Participant[] participants)
             {
-                if(participants == null) return;
+                if (participants == null) return;
 
-                foreach(var participant in participants)
+                foreach (var participant in participants)
                 {
                     Add(participant);
                 }
             }
             public void Sort()
             {
-                if(_participants == null) return;
+                if (_participants == null) return;
                 Participant.Sort(_participants);
             }
         }

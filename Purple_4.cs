@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Lab_6.Purple_4;
 
-namespace Lab_6
+namespace Lab_7
 {
     public class Purple_4
     {
@@ -31,7 +30,7 @@ namespace Lab_6
             //методы
             public void Run(double time)
             {
-                if (_time == 0) _time = time; 
+                if (_time == 0) _time = time;
             }
             public void Print()
             {
@@ -118,7 +117,7 @@ namespace Lab_6
             }
             public void Add(Group group)
             {
-                if(group.Sportsmen == null || _sportsmen == null) return;
+                if (group.Sportsmen == null || _sportsmen == null) return;
 
                 int before = _sportsmen.Length;
                 Array.Resize(ref _sportsmen, before + group.Sportsmen.Length);
@@ -131,9 +130,9 @@ namespace Lab_6
             {
                 if (_sportsmen == null) return;
 
-                for(int i = 1, j = 2; i < _sportsmen.Length; )
+                for (int i = 1, j = 2; i < _sportsmen.Length;)
                 {
-                    if(i == 0 || _sportsmen[i - 1].Time <= _sportsmen[i].Time)
+                    if (i == 0 || _sportsmen[i - 1].Time <= _sportsmen[i].Time)
                     {
                         i = j;
                         j++;
@@ -149,11 +148,11 @@ namespace Lab_6
             {
                 Group mergeredGroup = new Group("Финалисты");
 
-                if(group1.Sportsmen == null || group2.Sportsmen == null) return mergeredGroup;
+                if (group1.Sportsmen == null || group2.Sportsmen == null) return mergeredGroup;
 
                 int i = 0, j = 0;
 
-                while(i < group1.Sportsmen.Length && j < group2.Sportsmen.Length)
+                while (i < group1.Sportsmen.Length && j < group2.Sportsmen.Length)
                 {
                     if (group1.Sportsmen[i].Time <= group2.Sportsmen[j].Time)
                     {
@@ -164,11 +163,11 @@ namespace Lab_6
                         mergeredGroup.Add(group2.Sportsmen[j++]);
                     }
                 }
-                while(i < group1.Sportsmen.Length)
+                while (i < group1.Sportsmen.Length)
                 {
                     mergeredGroup.Add(group1.Sportsmen[i++]);
                 }
-                while(j < group2.Sportsmen.Length)
+                while (j < group2.Sportsmen.Length)
                 {
                     mergeredGroup.Add(group2.Sportsmen[j++]);
                 }
@@ -184,13 +183,13 @@ namespace Lab_6
 
                 foreach (var sportsman in _sportsmen)
                 {
-                    if(sportsman is SkiMan skiMan)
+                    if (sportsman is SkiMan skiMan)
                     {
                         Array.Resize(ref men, men.Length + 1);
                         men[men.Length - 1] = skiMan;
                     }
 
-                    if(sportsman is SkiWoman skiWoman)
+                    if (sportsman is SkiWoman skiWoman)
                     {
                         Array.Resize(ref women, women.Length + 1);
                         women[women.Length - 1] = skiWoman;
@@ -201,23 +200,28 @@ namespace Lab_6
             {
                 Sportsman[] men, women;
                 Split(out men, out women);
-                
+
                 Sportsman.Sort(men);
                 Sportsman.Sort(women);
 
-                Sportsman[] _sortSportsmen = new Sportsman[men.Length + women.Length];
                 int i = 0, j = 0, k = 0;
-                while(j < men.Length && k < women.Length)
+                while (j < men.Length && k < women.Length)
                 {
-                    _sortSportsmen[i++] = men[j++];
-                    _sortSportsmen[i++] = women[k++];
+                    if (men[0].Time <= women[0].Time)
+                    {
+                        _sportsmen[i++] = men[j++];
+                        _sportsmen[i++] = women[k++];
+                    }
+                    else
+                    {
+                        _sportsmen[i++] = women[k++];
+                        _sportsmen[i++] = men[j++];
+                    }
                 }
-                while(j < men.Length)
-                    _sortSportsmen[i++] = men[j++];
-                while(k < women.Length)
-                    _sortSportsmen[i++] = women[k++];
-
-                _sportsmen = _sortSportsmen;
+                while (j < men.Length)
+                    _sportsmen[i++] = men[j++];
+                while (k < women.Length)
+                    _sportsmen[i++] = women[k++];
             }
             public void Print()
             {
