@@ -155,6 +155,8 @@ namespace Lab_7
                     default: return null;
                 }
 
+                if(array.Length == 0) return null;
+
                 answers[0] = array[0];
                 counterAnswers[0] = 1;
 
