@@ -33,7 +33,16 @@ namespace Lab_7
             public string Name => _name;
             public string Surname => _surname;
             public int Distance => _distance;
-            public int[] Marks => _marks;
+            public int[] Marks
+            {
+                get
+                {
+                    if (_marks == null) return default(int[]);
+                    int[] copyMarks = new int[_marks.Length];
+                    Array.Copy(_marks, copyMarks, _marks.Length);
+                    return copyMarks;
+                }
+            }
             public int Result
             {
                 get
@@ -54,7 +63,7 @@ namespace Lab_7
                 _distance = distance;
                 _target = target;
 
-                if (marks == null || _marks == null) return;
+                if (marks == null || _marks == null || marks.Length != 5) return;
                 Array.Copy(marks, _marks, 5);
             }
             public static void Sort(Participant[] array)
