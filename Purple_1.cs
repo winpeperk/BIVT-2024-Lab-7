@@ -37,7 +37,7 @@ namespace Lab_7
             {
                 get
                 {
-                    if (_coef == null) return null;
+                    if (_coef == null) return default(double[]);
                     double[] _copyCoef = new double[4];
                     Array.Copy(_coef, _copyCoef, 4);
                     return _copyCoef;
@@ -47,7 +47,7 @@ namespace Lab_7
             {
                 get
                 {
-                    if (_marks == null) return null;
+                    if (_marks == null) return default(int[,]);
                     int[,] _copyMarks = new int[4, 7];
                     for (int i = 0; i < 4; i++)
                     {
@@ -169,34 +169,16 @@ namespace Lab_7
             {
                 _participants = new Participant[0];
 
-                if (_judges == null) return;
-                Judge[] _copyJudge = new Judge[judges.Length];
-                Array.Copy(_judges, _copyJudge, judges.Length);
+                if (judges == null) return;
+                _judges = new Judge[judges.Length];
+                Array.Copy(judges, _judges, judges.Length);
             }
             //поля
             private Judge[] _judges;
             private Participant[] _participants;
             //свойства
-            public Judge[] Judges
-            {
-                get
-                {
-                    if (_judges == null) return null;
-                    Judge[] _copyJudges = new Judge[_judges.Length];
-                    Array.Copy(_judges, _copyJudges, _judges.Length);
-                    return _copyJudges;
-                }
-            }
-            public Participant[] Participants
-            {
-                get
-                {
-                    if (_participants == null) return null;
-                    Participant[] _copyParticipants = new Participant[_participants.Length];
-                    Array.Copy(_participants, _copyParticipants, _participants.Length);
-                    return _copyParticipants;
-                }
-            }
+            public Judge[] Judges => _judges;
+            public Participant[] Participants => _participants;
             //методы
             public void Evaluate(Participant jumper)
             {
@@ -230,7 +212,6 @@ namespace Lab_7
             }
             public void Sort()
             {
-                if (_participants == null) return;
                 Participant.Sort(_participants);
             }
         }
