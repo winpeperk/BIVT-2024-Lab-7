@@ -38,11 +38,11 @@ namespace Lab_7
             }
             public static void Sort(Sportsman[] array)
             {
-                Group sortArray = new Group(""); //для инициализации массива
-                sortArray.Add(array);
-                sortArray.Sort();
+                if (array == null) return;
 
-                Array.Copy(sortArray.Sportsmen, array, array.Length);
+                Sportsman[] sortArray = array.OrderBy(sportsman => sportsman.Time).ToArray();
+
+                Array.Copy(sortArray, array, array.Length);
             }
         }
         public class SkiMan : Sportsman
@@ -86,17 +86,7 @@ namespace Lab_7
 
             //свойства
             public string Name => _name;
-            public Sportsman[] Sportsmen
-            {
-                get
-                {
-                    if (_sportsmen == null) return null;
-
-                    Sportsman[] copySportsmen = new Sportsman[_sportsmen.Length];
-                    Array.Copy(_sportsmen, copySportsmen, _sportsmen.Length);
-                    return copySportsmen;
-                }
-            }
+            public Sportsman[] Sportsmen => _sportsmen;
 
             //методы
             public void Add(Sportsman sportsman)
@@ -117,14 +107,7 @@ namespace Lab_7
             }
             public void Add(Group group)
             {
-                if (group.Sportsmen == null || _sportsmen == null) return;
-
-                int before = _sportsmen.Length;
-                Array.Resize(ref _sportsmen, before + group.Sportsmen.Length);
-                for (int i = 0; i < group.Sportsmen.Length; i++)
-                {
-                    _sportsmen[before + i] = group.Sportsmen[i];
-                }
+                Add(group.Sportsmen);
             }
             public void Sort()
             {
