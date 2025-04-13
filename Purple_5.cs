@@ -259,13 +259,13 @@ namespace Lab_7
             }
             public (string, double)[] GetGeneralReport(int question)
             {
-                if (_researches == null) return null;
+                if (_researches == null || _researches.Length == 0) return null;
 
                 string[] answers = new string[0];
 
                 foreach (var research in _researches)
                 {
-                    if (research.Responses == null) return null;
+                    if (research.Responses == null) continue;
 
                     foreach (var response in research.Responses)
                     {
@@ -296,6 +296,8 @@ namespace Lab_7
                         }
                     }
                 }
+
+                if (answers.Length == 0) return null;
 
                 var groupOfUniqueAnswers = answers.GroupBy(answer => answer);
 
