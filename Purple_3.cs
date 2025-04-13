@@ -62,6 +62,22 @@ namespace Lab_7
                     return _places.Sum();
                 }
             }
+            private int TopPlace
+            {
+                get
+                {
+                    if (_places == null) return 0;
+                    return _places.Min();
+                }
+            }
+            private double TotalMark
+            {
+                get
+                {
+                    if (_marks == null) return 0;
+                    return _marks.Sum();
+                }
+            }
 
             //методы
             public void Evaluate(double result)
@@ -72,105 +88,43 @@ namespace Lab_7
             public static void SetPlaces(Participant[] participants)
             {
                 if(participants == null) return;
-
-                for(int judge = 0; judge < 7; judge++) //проходимся по оценкам у каждого судьи
+                for(int judge = 0; judge < 7; judge++)
                 {
-                    double[] copyMarks = new double[participants.Length]; //массив оценок всех участников у конкретного судьи
-                    for(int i = 0; i < participants.Length; i++)
+                    Array.Sort(participants, (x, y) =>
                     {
-                        if (participants[i]._marks == null) return;
-                        copyMarks[i] = participants[i]._marks[judge];
-                    }
-                    
-                    Participant[] copyParticipants = new Participant[participants.Length];
-                    Array.Copy(participants, copyParticipants, participants.Length);
+                        double a = x.Marks?[judge] ?? 0;
+                        double b = y.Marks?[judge] ?? 0;
+                        return b.CompareTo(a);
+                    });
 
-                    for (int i = 1, j = 2; i < participants.Length; )
-                    {
-                        if(i == 0 || copyMarks[i-1] >= copyMarks[i])
-                        {
-                            i = j;
-                            j++;
-                        }
-                        else
-                        {
-                            (copyMarks[i - 1], copyMarks[i]) = (copyMarks[i], copyMarks[i - 1]);
-                            (copyParticipants[i - 1], copyParticipants[i]) = (copyParticipants[i], copyParticipants[i - 1]);
-                            i--;
-                        }
-                    } //параллельно сортируем копию массива оценок у судьи и копию массива участников
-
-                    int[] places = new int[participants.Length]; //массив мест у конкретного судьи
-                    places[0] = 1;
-                    for(int i = 1; i < places.Length; i++)
-                    {
-                        if (copyMarks[i] == copyMarks[i - 1])
-                        {
-                            places[i] = places[i - 1];
-                        }
-                        else
-                        {
-                            places[i] = places[i - 1] + 1;
-                        }
-                    }
-
-                    for (int i = 0; i < participants.Length; i++)
-                    {
-                        if (copyParticipants[i]._places == null) return;
-                        copyParticipants[i]._places[judge] = places[i];
-                    }
-                    
-                }
-
-                int[] lastPlaces = new int[participants.Length]; //сортируем по возрастанию мест у последнего судьи
-                for(int i = 0; i < lastPlaces.Length; i++)
-                {
-                    lastPlaces[i] = participants[i]._places[6];
-                }
-                for (int i = 1, j = 2; i < participants.Length;)
-                {
-                    if (i == 0 || lastPlaces[i-1] <= lastPlaces[i])
-                    {
-                        i = j;
-                        j++;
-                    }
-                    else
-                    {
-                        (lastPlaces[i - 1], lastPlaces[i]) = (lastPlaces[i], lastPlaces[i - 1]);
-                        (participants[i - 1], participants[i]) = (participants[i], participants[i - 1]);
-                        i--;
-                    }
+                    for (int place = 0; place < participants.Length; place++)
+                        participants[place].SetPlace(judge, place + 1);
                 }
             }
+            private void SetPlace(int judge, int place)
+            {
+                if (_places == null || judge < 0 || judge > _places.Length) return;
+                _places[judge] = place;
+            }
+
             public static void Sort(Participant[] array)
             {
                 if (array == null) return;
 
                 foreach (var participant in array)
                 {
-                    if (participant._marks == null || participant._places == null) return;
+                    if (participant.Places == null) return;
                 }
 
-                Array.Sort(array, (participant1, participant2) =>
+                Array.Sort(array, (x, y) =>
                 {
-                    //по сумме мест
-                    if (participant1.Score > participant2.Score)
-                        return 1;
-                    else if (participant1.Score < participant2.Score) return -1;
+                    int scoreComparison = x.Score.CompareTo(y.Score);
+                    if (scoreComparison != 0) return scoreComparison;
 
-                    //минимальное место
-                    if (participant1._places.Min() > participant2._places.Min())
-                        return 1;
-                    else if (participant1._places.Min() < participant2._places.Min())
-                        return -1;
+                    int topPlaceComparison = x.TopPlace.CompareTo(y.TopPlace);
+                    if (topPlaceComparison != 0) return topPlaceComparison;
 
-                    //по сумме очков
-                    if (participant1._marks.Sum() > participant2._marks.Sum())
-                        return -1;
-                    else if (participant1._marks.Sum() < participant2._marks.Sum())
-                        return 1;
-
-                    return 0;
+                    return y.TotalMark.CompareTo(x.TotalMark);
                 });
             }
             public void Print()
@@ -197,46 +151,22 @@ namespace Lab_7
             protected double[] _moods;
 
             //свойства
-            public Participant[] Participants
-            {
-                get
-                {
-                    if (_participants == null) return null;
-
-                    Participant[] copyParticipants = new Participant[_participants.Length];
-                    Array.Copy(_participants, copyParticipants, _participants.Length);
-
-                    return copyParticipants;
-                }
-            }
-            public double[] Moods
-            {
-                get
-                {
-                    if (_moods == null) return null;
-
-                    double[] copyMoods = new double[_moods.Length];
-                    Array.Copy(_moods, copyMoods, _moods.Length);
-
-                    return copyMoods;
-                }
-            }
+            public Participant[] Participants => _participants;
+            public double[] Moods => _moods;
 
             //методы
             protected abstract void ModificateMood();
             public void Evaluate(double[] marks)
             {
-                if (_participants == null || _moods == null || marks == null || _moods.Length != marks.Length) return;
+                if (_participants == null || marks == null) return;
 
                 foreach (var participant in _participants)
                 {
-                    if (participant.Marks == null) continue;
-
                     if (participant.Marks.All(mark => mark == 0))
                     {
                         for (int i = 0; i < _moods.Length; i++)
                         {
-                            participant.Evaluate(marks[i] * _moods[i]);
+                            participant.Evaluate(marks[i] * Moods[i]);
                         }
                         break;
                     }
@@ -294,3 +224,4 @@ namespace Lab_7
     }
 
 }
+        
