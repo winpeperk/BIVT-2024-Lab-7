@@ -259,7 +259,7 @@ namespace Lab_7
             }
             public (string, double)[] GetGeneralReport(int question)
             {
-                if (_researches == null || _researches.Length == 0) return null;
+                if (_researches == null || _researches.Length == 0 || question < 1 || question > 3) return null;
 
                 string[] answers = new string[0];
 
@@ -273,26 +273,25 @@ namespace Lab_7
                         {
                             case 1:
                                 {
-                                    if (response.Animal == null) break;
+                                    if (response.Animal == null || response.Animal.Length == 0 || response.Animal == "-") break;
                                     Array.Resize(ref answers, answers.Length + 1);
                                     answers[answers.Length - 1] = response.Animal;
                                     break;
                                 }
                             case 2:
                                 {
-                                    if (response.CharacterTrait == null) break;
+                                    if (response.CharacterTrait == null || response.CharacterTrait.Length == 0 || response.CharacterTrait == "-") break;
                                     Array.Resize(ref answers, answers.Length + 1);
                                     answers[answers.Length - 1] = response.CharacterTrait;
                                     break;
                                 }
                             case 3:
                                 {
-                                    if (response.Concept == null) break;
+                                    if (response.Concept == null || response.Concept.Length == 0 || response.Concept == "-") break;
                                     Array.Resize(ref answers, answers.Length + 1);
                                     answers[answers.Length - 1] = response.Concept;
                                     break;
                                 }
-                            default: return null;
                         }
                     }
                 }
