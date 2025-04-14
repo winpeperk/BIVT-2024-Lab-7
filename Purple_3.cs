@@ -82,13 +82,13 @@ namespace Lab_7
             //методы
             public void Evaluate(double result)
             {
-                if (counterMark >= 7 || _marks == null) return;
+                if (counterMark >= 7 || _marks == null || result < 0.0 || result > 6.0) return;
                 _marks[counterMark++] = result;
             }
             public static void SetPlaces(Participant[] participants)
             {
-                if(participants == null) return;
-                for(int judge = 0; judge < 7; judge++)
+                if (participants == null) return;
+                for (int judge = 0; judge < 7; judge++)
                 {
                     Array.Sort(participants, (x, y) =>
                     {
@@ -151,9 +151,23 @@ namespace Lab_7
             protected double[] _moods;
 
             //свойства
-            public Participant[] Participants => _participants;
-            public double[] Moods => _moods;
+            public Participant[] Participants
+            {
+                get
+                {
+                    if (_participants == null) return null;
+                    return _participants;
+                }
+            }
 
+            public double[] Moods
+            {
+                get
+                {
+                    if (_moods == null) return null;
+                    return _moods;
+                }
+            }
             //методы
             protected abstract void ModificateMood();
             public void Evaluate(double[] marks)
@@ -224,4 +238,3 @@ namespace Lab_7
     }
 
 }
-        
