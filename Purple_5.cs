@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -259,54 +258,44 @@ namespace Lab_7
             }
             public (string, double)[] GetGeneralReport(int question)
             {
-                if (_researches == null || _researches.Length == 0 || question < 1 || question > 3) return null;
+                if (_researches == null || _researches.Length == 0 || question < 1 || question > 3) 
+                    return null;
 
-                string[] answers = new string[0];
+                var allResponses = new List<string>();
 
                 foreach (var research in _researches)
                 {
                     if (research.Responses == null) continue;
-
+                    
                     foreach (var response in research.Responses)
                     {
+                        string value = null;
                         switch (question)
                         {
                             case 1:
-                                {
-                                    if (response.Animal == null || response.Animal.Length == 0 || response.Animal == "-") break;
-                                    Array.Resize(ref answers, answers.Length + 1);
-                                    answers[answers.Length - 1] = response.Animal;
-                                    break;
-                                }
+                                value = response.Animal;
+                                break;
                             case 2:
-                                {
-                                    if (response.CharacterTrait == null || response.CharacterTrait.Length == 0 || response.CharacterTrait == "-") break;
-                                    Array.Resize(ref answers, answers.Length + 1);
-                                    answers[answers.Length - 1] = response.CharacterTrait;
-                                    break;
-                                }
+                                value = response.CharacterTrait;
+                                break;
                             case 3:
-                                {
-                                    if (response.Concept == null || response.Concept.Length == 0 || response.Concept == "-") break;
-                                    Array.Resize(ref answers, answers.Length + 1);
-                                    answers[answers.Length - 1] = response.Concept;
-                                    break;
-                                }
+                                value = response.Concept;
+                                break;
+                        }
+
+                        if (!string.IsNullOrEmpty(value))
+                        {
+                            allResponses.Add(value);
                         }
                     }
                 }
 
-                if (answers.Length == 0) return null;
+                if (allResponses.Count == 0) return null;
 
-                var groupOfUniqueAnswers = answers.GroupBy(answer => answer);
-
-                double allAnswers = answers.Length;
-
-                (string, double)[] result = groupOfUniqueAnswers
-                    .Select(answer => (answer.Key, answer.Count() / allAnswers * 100))
+                return allResponses
+                    .GroupBy(s => s)
+                    .Select(g => (g.Key, g.Count() * 100.0 / allResponses.Count))
                     .ToArray();
-
-                return result;
             }
         }
     }
