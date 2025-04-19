@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Lab_7.Purple_5;
 
 namespace Lab_7
 {
@@ -261,7 +262,7 @@ namespace Lab_7
                 if (_researches == null || _researches.Length == 0 || question < 1 || question > 3) 
                     return null;
 
-                var allResponses = new List<string>();
+                var allResponses = new string[0];
 
                 foreach (var research in _researches)
                 {
@@ -285,17 +286,19 @@ namespace Lab_7
 
                         if (!string.IsNullOrEmpty(value))
                         {
-                            allResponses.Add(value);
+                            Array.Resize(ref allResponses, allResponses.Length + 1);
+                            allResponses[allResponses.Length - 1] = value;
                         }
                     }
                 }
 
-                if (allResponses.Count == 0) return null;
+                if (allResponses.Length == 0)
+                    return Array.Empty<(string, double)>();
 
                 return allResponses
-                    .GroupBy(s => s)
-                    .Select(g => (g.Key, g.Count() * 100.0 / allResponses.Count))
-                    .ToArray();
+                        .GroupBy(s => s)
+                        .Select(g => (g.Key, g.Count() * 100.0 / allResponses.Length))
+                        .ToArray();
             }
         }
     }

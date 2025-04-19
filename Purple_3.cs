@@ -139,7 +139,7 @@ namespace Lab_7
             {
                 _participants = new Participant[0];
 
-                if (moods == null || moods.Length != 7) return;
+                if (moods == null || moods.Length <= 7) return;
 
                 _moods = new double[7];
                 Array.Copy(moods, _moods, 7);
