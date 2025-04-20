@@ -142,7 +142,7 @@ namespace Lab_7
                 if (moods == null) return;
 
                 _moods = new double[7];
-                Array.Copy(moods, _moods, moods.Length);
+                Array.Copy(moods, _moods, _moods.Length);
                 ModificateMood();
             }
 
